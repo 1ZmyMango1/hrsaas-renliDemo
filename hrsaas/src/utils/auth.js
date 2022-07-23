@@ -1,6 +1,6 @@
 import Cookies from 'js-cookie'
 
-const TokenKey = 'vue_admin_template_token'
+const TokenKey = 'hrsaas_token'   //toekn 存储到本地存储 >>key
 
 export function getToken() {
   return Cookies.get(TokenKey)
