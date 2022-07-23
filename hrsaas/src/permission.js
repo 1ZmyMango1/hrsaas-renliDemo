@@ -1,41 +1,44 @@
-import router from "./router";
-
-import store from "./store";
-
+import router from "@/router";
+import store from "@/store";
 // 引入进度条插件
-import NProgress from 'nprogress'
-// 进度条插件
-import 'nprogress/nprogress.css'
+import Nprogress from "nprogress";
+import "nprogress/nprogress.css";
+
+const loginPath = "/login";
+const notFoundPath = "/404";
 
 // 定义一个白名单
-const whiteList = ['/404','/login']
+const whiteList = [loginPath, notFoundPath];
 
 // 路由前置守卫
-router.beforeEach((to,from,next)=>{
-    // 开启进度条
-    NProgress.start()
-    // 判断是否有token
-    // 如果有token，除了登录界面不能登录，其他都可以
-    const token = store.getters.token
-    if(token){
-        // 判断是否去登录页面
-        if(to.path === '/login'){
-            next('/')   //跳转到首页
-        }else {
-            next() //直接放行
-        }
-    }else{
-        // 判断是否去白名单界面 /login
-        if(whiteList.includes(to.path)){
-            next()
-        }else {
-            // 如果你没有token，同时要去的页面不是白名单页面（要去有全新的页面） --->重定向登录页面
-            next('/login')
-        }
+router.beforeEach(async (to, from, next) => {
+  // 开启进度条
+  Nprogress.start();
+  // 判断有没有token
+  if (store.getters.token) {
+    // 有token 并且没有用户信息时 去请求用户信息
+    if (!store.getters.userId) {
+      await store.dispatch("user/getUserInfo");
     }
-})
-
+    // 有token 如果去登陆页面 直接跳转到首页
+    if (to.path === loginPath) {
+      return next("/");
+    } else {
+      // 不去登录页面 直接放行
+      return next();
+    }
+  } else {
+    // 没有token
+    // 如果在白名单内 直接放行
+    if (whiteList.includes(to.path)) {
+      return next();
+    } else {
+      // 不在白名单 就去登陆页面
+      return next(loginPath);
+    }
+  }
+});
 // 后置守卫
-router.afterEach(()=>{
-    NProgress.done()// 结束进度条
-})
+router.afterEach(() => {
+  Nprogress.done(); // 结束进度条
+});

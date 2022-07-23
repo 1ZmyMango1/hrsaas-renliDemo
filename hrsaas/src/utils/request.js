@@ -1,5 +1,6 @@
 import axios from "axios";
 import { Message } from "element-ui";
+import store from "@/store";
 
 // 创建一个axios的实例
 const request = axios.create({
@@ -7,7 +8,18 @@ const request = axios.create({
 });
 
 // 请求拦截器
-request.interceptors.request.use();
+request.interceptors.request.use(
+  (config) => {
+    // 如果token存在，请求的时候需要把token携带到请求头上
+    const token = store.getters.token;
+    if (token) {
+      // token 携带到请求头上
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
 
 // 响应拦截器
 request.interceptors.response.use((response) => {
