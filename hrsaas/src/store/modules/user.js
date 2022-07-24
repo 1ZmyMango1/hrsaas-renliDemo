@@ -1,5 +1,5 @@
 // 状态
-import { getToken, removeToken, setToken } from "@/utils/auth";
+import { getToken, removeToken, setToken, setTimer } from "@/utils/auth";
 import { getUserDetailById, getUserInfo, login } from "@/api/user";
 
 const state = {
@@ -20,6 +20,9 @@ const mutations = {
     state.token = null;
     removeToken();
   },
+  removeUserInfo(state) {
+    state.userInfo = {};
+  },
 };
 // 执行异步
 const actions = {
@@ -27,6 +30,7 @@ const actions = {
   async login(context, data) {
     // 调用登录的请求接口
     const res = await login(data);
+    setTimer();
     // 打印接口调用的结果
     console.log("res", res);
     context.commit("setToken", res);
@@ -36,6 +40,12 @@ const actions = {
     const data = await getUserInfo(); //获取返回值
     const baseInfo = await getUserDetailById(data.userId);
     context.commit("setUserInfo", { ...data, ...baseInfo });
+  },
+
+  // 退出登录
+  logOut(context) {
+    context.commit("removeToken");
+    context.commit("removeUserInfo");
   },
 };
 export default {

@@ -11,7 +11,7 @@
     <div class="right-menu">
       <el-dropdown class="avatar-container" trigger="click">
         <div class="avatar-wrapper">
-          <img :src="avatar" class="user-avatar">
+          <img v-imgError='defaultImg' :src="avatar" class="user-avatar">
           <span class="name">{{name}}</span>
           <i class="el-icon-caret-bottom"/>
         </div>
@@ -38,6 +38,8 @@ import { mapGetters } from 'vuex'
 import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
 
+import defaultImg from '@/assets/common/bigUserHeader.png'
+
 export default {
   components: {
     Breadcrumb,
@@ -50,12 +52,17 @@ export default {
       'name'
     ])
   },
+  data () {
+    return {
+      defaultImg
+    }
+  },
   methods: {
     toggleSideBar() {
       this.$store.dispatch('app/toggleSideBar')
     },
     async logout() {
-      await this.$store.dispatch('user/logout')
+      await this.$store.dispatch('user/logOut')
       this.$router.push(`/login?redirect=${this.$route.fullPath}`)
     }
   }
