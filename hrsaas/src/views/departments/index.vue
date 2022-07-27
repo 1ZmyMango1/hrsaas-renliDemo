@@ -1,7 +1,7 @@
 <template>
-  <div class="dashboard-container">
+  <div class="dashboard-container" v-loading="loading">
     <div class="app-container">
-      <el-card>
+      <el-card class="title-card">
         <TreeTool
           :is-root="true"
           :tree-data="company"
@@ -42,6 +42,7 @@ export default {
   },
   data() {
     return {
+      loading: false,
       isShowAddDept: false, //控制子组件的弹层
       currentNode: {},
       defaultProps: {
@@ -66,16 +67,22 @@ export default {
   methods: {
     // 树形结构的接口内容
     async getDepartments() {
-      const res = await getDepartments();
-      // console.log(res, "res");
-      // 替换公司数据
-      this.company = {
-        name: res.companyName,
-        manager: res.companyManager || "管理员",
-        id: "",
-      };
-      // 替换部门数据
-      this.departs = transListToTree(res.depts, "");
+      this.loading = true;
+      try {
+        const res = await getDepartments();
+        // console.log(res, "res");
+        // 替换公司数据
+        this.company = {
+          name: res.companyName,
+          manager: res.companyManager || "管理员",
+          id: "",
+        };
+        // 替换部门数据
+        this.departs = transListToTree(res.depts, "");
+        this.loading = false;
+      } catch (error) {
+        this.loading = false;
+      }
     },
     // 添加
     handlerAddDept(node) {
@@ -104,7 +111,7 @@ export default {
   margin: 50px auto;
 }
 
-.box-card {
+.title-card {
   background-color: #99ccff;
 }
 </style>

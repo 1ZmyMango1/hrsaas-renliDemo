@@ -100,7 +100,17 @@ export default {
       // 获取所有部门数据
       const { depts } = await getDepartments();
       // 判断所有部门里面的code 和 输入的 内容是否 重复
-      const reRepeat = depts.some((item) => item.code === value);
+      let reRepeat = null;
+      if (this.formData.id) {
+        // 编辑
+        reRepeat = depts.some(
+          (item) => item.code === value && item.id !== this.currentNode.id
+        );
+      } else {
+        // 新增
+        reRepeat = depts.some((item) => item.code === value);
+      }
+
       // 如果重复 提醒用户 说明表单验证失败
       if (reRepeat) {
         return Promise.reject("部门编码重复了");
