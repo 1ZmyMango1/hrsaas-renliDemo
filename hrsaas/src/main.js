@@ -4,7 +4,9 @@ import "normalize.css/normalize.css"; // A modern alternative to CSS resets
 
 import ElementUI from "element-ui";
 import "element-ui/lib/theme-chalk/index.css";
-import locale from "element-ui/lib/locale/lang/en"; // lang i18n
+// import locale from "element-ui/lib/locale/lang/en"; // lang i18n
+import Components from "./components/index";//全局注册 插槽
+Vue.use(Components)
 
 import "@/styles/index.scss"; // global css
 
@@ -21,6 +23,13 @@ import * as directives from "@/directives/index";
 for (const key in directives) {
   // 注册指令
   Vue.directive(key, directives[key]);
+}
+
+// 引入过滤器 --注册
+import * as filters from '@/filters/index'
+// 所有的过滤器，进行全局注册
+for(const filtersKey in filters){
+  Vue.filter(filtersKey, filters[filtersKey])
 }
 
 /**

@@ -20,7 +20,7 @@
 
 <script>
 export default {
-  name: "TooBar",
+  name: "ToolBar",
 };
 </script>
 
