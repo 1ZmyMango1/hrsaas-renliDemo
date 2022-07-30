@@ -7,9 +7,18 @@
         </template>
 
         <template #after>
-          <el-button type="primary" size="mini">导入</el-button>
-          <el-button type="danger" size="mini">导出</el-button>
-          <el-button type="warning" size="mini" @click="isShowDialogVisible = true">新增员工 </el-button>
+          <el-button type="primary" size="mini" @click="$router.push('/import')"
+            >导入</el-button
+          >
+          <el-button type="danger" size="mini" @click="exportExcel"
+            >导出</el-button
+          >
+          <el-button
+            type="warning"
+            size="mini"
+            @click="isShowDialogVisible = true"
+            >新增员工
+          </el-button>
         </template>
       </ToolBar>
 
@@ -126,6 +135,20 @@ export default {
       } catch (e) {
         console.log(e);
       }
+    },
+    async exportExcel() {
+      const { export_json_to_excel } = await import("../../utils/Export2Excel");
+      const tHeader = ["id", "name"];
+      export_json_to_excel({
+        header: tHeader, //表头 必填
+        data: [
+          [1, "易烊千玺"],
+          [2, "黎明"],
+        ], // 具体数据 必填
+        filename: "excel-list", //非必填
+        autoWidth: true, //非必填
+        bookType: "xlsx", //非必填
+      });
     },
   },
 };
