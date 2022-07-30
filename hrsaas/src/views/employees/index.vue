@@ -9,7 +9,7 @@
         <template #after>
           <el-button type="primary" size="mini">导入</el-button>
           <el-button type="danger" size="mini">导出</el-button>
-          <el-button type="warning" size="mini">新增员工 </el-button>
+          <el-button type="warning" size="mini" @click="isShowDialogVisible = true">新增员工 </el-button>
         </template>
       </ToolBar>
 
@@ -62,19 +62,23 @@
         </el-pagination>
       </el-row>
     </div>
+    <AddEmploy :isShowDialogVisible.sync="isShowDialogVisible"></AddEmploy>
   </div>
 </template>
 
 <script>
 import { getEmployeeList, delEmployee } from "../../api/employees";
 import employees from "../../api/constant/employees";
+import AddEmploy from "./components/add-employee.vue";
 // import ToolBar from "../../components/ToolBar";
 export default {
   components: {
     // ToolBar,
+    AddEmploy,
   },
   data() {
     return {
+      isShowDialogVisible: false,
       value: false,
       page: {
         page: 1,
