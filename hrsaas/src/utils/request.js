@@ -62,9 +62,10 @@ request.interceptors.response.use(
   },
   (error) => {
     if (error.response.status === 401) {
+      // debugger
       // 退出登录
-      store.commit("user/logOut");
-      router.push("/");
+      store.dispatch("user/logOut");
+      router.push("/login");
     }
     Message.error(error.response?.data?.message || "系统错误，请重试");
     return Promise.reject(error);

@@ -4,9 +4,12 @@ import "normalize.css/normalize.css"; // A modern alternative to CSS resets
 
 import ElementUI from "element-ui";
 import "element-ui/lib/theme-chalk/index.css";
+import Print  from 'vue-print-nb'
 // import locale from "element-ui/lib/locale/lang/en"; // lang i18n
 import Components from "./components/index";//全局注册 插槽
 Vue.use(Components)
+
+Vue.use(Print)
 
 import "@/styles/index.scss"; // global css
 
