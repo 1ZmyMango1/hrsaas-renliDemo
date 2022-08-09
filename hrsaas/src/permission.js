@@ -18,7 +18,22 @@ router.beforeEach(async (to, from, next) => {
   if (store.getters.token) {
     // 有token 并且没有用户信息时 去请求用户信息
     if (!store.getters.userId) {
-      await store.dispatch("user/getUserInfo");
+      // 获取用户信息
+      const res = await store.dispatch("user/getUserInfo");
+      console.log(res);
+      // 添加用户拥有的路由权限之后，在去做跳转， filterRoutes
+      const routes = await store.dispatch(
+        "permission/filterRoutes",
+        res.roles.menus
+      );
+      // 默认情况只有静态路由
+      //进行动态路由的添加
+      router.addRoutes([
+        ...routes,
+        { path: "*", redirect: "/404", hidden: true },
+      ]); // 404 page must be placed at the end !!!
+      // 重新进行跳转
+      next(to.path);
     }
     // 有token 如果去登陆页面 直接跳转到首页
     if (to.path === loginPath) {

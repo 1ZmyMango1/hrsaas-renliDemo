@@ -19,7 +19,12 @@
             <el-table-column prop="description" label="描述"> </el-table-column>
             <el-table-column label="操作">
               <template v-slot="{ row }">
-                <el-button type="success" size="small">分配权限</el-button>
+                <el-button
+                  type="success"
+                  size="small"
+                  @click="assignPerm(row.id)"
+                  >分配权限</el-button
+                >
                 <el-button type="primary" size="small" @click="edit(row.id)"
                   >编辑</el-button
                 >
@@ -96,6 +101,24 @@
         <el-button type="primary" @click="submitOk">确 定</el-button>
       </template>
     </el-dialog>
+
+    <el-dialog :title="title" :visible="dialogAssignPerm" @close="cancel">
+      <el-tree
+        ref="treeRef"
+        :data="permissionList"
+        show-checkbox
+        default-expand-all
+        check-strictly
+        :props="props"
+        node-key="id"
+        :default-checked-keys="checkedKeys"
+      >
+      </el-tree>
+      <template #footer>
+        <el-button @click="cancel">取 消</el-button>
+        <el-button type="primary" @click="submitOk">确 定</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -107,10 +130,20 @@ import {
   getRoleDetail,
   updateRole,
   addRole,
+  assignPerm,
 } from "../../api/setting";
+import { transListToTree } from "../../utils";
+import { getPermissionList } from "../../api/permisson";
 export default {
   data() {
     return {
+      current: null,
+      permissionList: [],
+      checkedKeys: [],
+      props: {
+        label: "name",
+      },
+      dialogAssignPerm: false,
       activeName: "first",
       tableData: [],
       page: {
@@ -215,6 +248,37 @@ export default {
       this.$message.success("成功");
       this.getRoleList();
       this.close();
+    },
+
+    // 分配权限
+    async assignPerm(id) {
+      this.current = id;
+      // console.log(id);
+      // 点击分配权限
+      // 获取权限点数据 在点击的时候调用 获取权限点数据
+      this.permissionList = transListToTree(await getPermissionList(), "0"); //转化list到树形数据
+
+      const { permIds } = await getRoleDetail(id); // permIds是当前角色所拥有的权限点数据
+
+      // console.log(res);
+      this.checkedKeys = permIds; // 将当前角色所拥有的权限id赋值
+      this.dialogAssignPerm = true;
+    },
+
+    // 分配角色确定
+    async submitOk() {
+      const ids = this.$refs.treeRef.getCheckedKeys();
+      await assignPerm({
+        id: this.current,
+        permIds: ids,
+      });
+      this.$message.success("分配权限成功");
+      this.cancel();
+    },
+    // 分配角色取消
+    cancel() {
+      this.dialogAssignPerm = false;
+      this.checkedKeys = [];
     },
 
     handleClick() {},

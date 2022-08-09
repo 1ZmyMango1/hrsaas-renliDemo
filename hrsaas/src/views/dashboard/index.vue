@@ -6,11 +6,16 @@
 
 <script>
 import { mapGetters } from "vuex";
+// import { mixins } from "../../utils/mixins";
 export default {
   name: "Dashboard",
+  // mixins: [mixins],
   computed: {
     ...mapGetters(["name"]),
   },
+  // mounted() {
+  //   this.hello();
+  // },
 };
 </script>
 

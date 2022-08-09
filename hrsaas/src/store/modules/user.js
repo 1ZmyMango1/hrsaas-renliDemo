@@ -1,6 +1,7 @@
 // 状态
 import { getToken, removeToken, setToken, setTimer } from "@/utils/auth";
 import { getUserDetailById, getUserInfo, login } from "@/api/user";
+import { resetRouter } from "@/router";
 
 const state = {
   token: getToken(),
@@ -40,12 +41,20 @@ const actions = {
     const data = await getUserInfo(); //获取返回值
     const baseInfo = await getUserDetailById(data.userId);
     context.commit("setUserInfo", { ...data, ...baseInfo });
+    return { ...data, ...baseInfo };
   },
 
   // 退出登录
   logOut(context) {
     context.commit("removeToken");
     context.commit("removeUserInfo");
+
+    // 重置路由匹配信息
+    resetRouter();
+
+    // context是根节点上下文
+    // vuex里面的路由表置空
+    context.commit("permission/setRoutes", [], { root: true });
   },
 };
 export default {

@@ -73,7 +73,11 @@
             <el-button type="text" size="small" @click="isShowRole(row.id)"
               >角色</el-button
             >
-            <el-button type="text" size="small" @click="delBtn(row.id)"
+            <el-button
+              :disabled="checkPermission('DELETE_USER')"
+              type="text"
+              size="small"
+              @click="delBtn(row.id)"
               >删除</el-button
             >
           </template>
@@ -121,8 +125,10 @@ import { formatDate } from "../../filters/index";
 // import ToolBar from "../../components/ToolBar";
 import QrCode from "qrcode";
 import AssDialog from "./components/assign-role.vue";
+import { mixins } from "../../utils/mixins";
 // import { getUserDetailById } from "@/api/user";
 export default {
+  mixins: [mixins],
   components: {
     // ToolBar,
     AddEmploy,

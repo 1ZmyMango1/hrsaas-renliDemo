@@ -22,7 +22,9 @@
               @click="addPermission(row.id, 2)"
               >添加</el-button
             >
-            <el-button type="text">编辑</el-button>
+            <el-button type="text" @click="editPermission(row.id)"
+              >编辑</el-button
+            >
             <el-button type="text" @click="delPermission(row.id)"
               >删除</el-button
             >
@@ -31,7 +33,12 @@
       </el-table>
     </div>
 
-    <el-dialog title="提示" :visible.sync="showDialog" width="50%">
+    <el-dialog
+      :title="`${title}权限`"
+      :visible.sync="showDialog"
+      width="50%"
+      @close="close"
+    >
       <el-form ref="formRef" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="权限名称" prop="name">
           <el-input v-model="form.name"></el-input>
@@ -69,6 +76,8 @@ import {
   getPermissionList,
   addPermission,
   delPermission,
+  getPermissionDetail,
+  updatePermission,
 } from "../../api/permisson";
 import { transListToTree } from "../../utils";
 export default {
@@ -98,12 +107,24 @@ export default {
   created() {
     this.getPermissionList();
   },
+  computed: {
+    title() {
+      return this.form.id ? "编辑" : "新增";
+    },
+  },
   methods: {
     // 获取权限/初始化的时候获取所有的权限列表
     async getPermissionList() {
       const res = await getPermissionList();
       // console.log(res);
       this.list = transListToTree(res, "0");
+    },
+    // 编辑
+    async editPermission(id) {
+      const res = await getPermissionDetail(id);
+      console.log(res);
+      this.form = res;
+      this.showDialog = true;
     },
     // 添加权限
     addPermission(pid, type) {
@@ -120,11 +141,12 @@ export default {
         // 判断是添加还是编辑
         if (this.form.id) {
           // 编辑
+          await updatePermission(this.form);
         } else {
           // 新增
           await addPermission(this.form);
         }
-        this.$message.success("成功");
+        this.$message.success(`${this.title}权限点成功`);
         // 重新渲染数据
         await this.getPermissionList();
         this.close();
